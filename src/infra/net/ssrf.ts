@@ -227,6 +227,10 @@ export function isPrivateNetworkAllowedByPolicy(policy?: SsrFPolicy): boolean {
 }
 
 function shouldSkipPrivateNetworkChecks(hostname: string, policy?: SsrFPolicy): boolean {
+  // Bypass SSRF checks when OPENCLAW_BYPASS_SSRF=1 (for VPN/proxy environments)
+  if (process.env.OPENCLAW_BYPASS_SSRF === "1") {
+    return true;
+  }
   return (
     isPrivateNetworkAllowedByPolicy(policy) ||
     normalizeHostnameSet(policy?.allowedHostnames).has(hostname)
